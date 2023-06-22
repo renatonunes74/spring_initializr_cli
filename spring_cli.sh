@@ -66,7 +66,7 @@ while true; do
 				-d description=$DESCRIPTION \
 				-d dependencies=$DEPENDENCIES \
 				| tar --directory $ARTIFACT_ID -zxf - && \
-				echo "Spring Boot project now in $ARTIFACT_ID directory... Happy Hacking! :)"
+				echo "Spring Boot project now in $ARTIFACT_ID directory"
 							exit 0;;
 
 						(*"[13]"*) exit && break;;
