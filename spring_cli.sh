@@ -1,20 +1,19 @@
-#$METADATA = $(curl -s -H 'Accept: application/json' https://start.spring.io)
-METADATA=$(cat metadata.txt)
+METADATA=$(curl -s -H 'Accept: application/json' https://start.spring.io)
 BUILD=$(echo $METADATA | jq -r '.type.default')
 LANGUAGE=$(echo $METADATA | jq -r '.language.default')
 SPRING_BOOT_VERSION=$(echo $METADATA | jq -r '.bootVersion.default')
 GROUP_ID=$(echo $METADATA | jq -r '.groupId.default')
 ARTIFACT_ID=$(echo $METADATA | jq -r '.artifactId.default')
-NAME=""
+NAME=$(echo $METADATA | jq -r '.name.default')
 DESCRIPTION=$(echo $METADATA | jq -r '.description.default')
-PACKAGE_NAME=""
-PACKING=""
+PACKAGE_NAME=$(echo $METADATA | jq -r '.packageName.default')
+PACKING=$(echo $METADATA | jq -r '.packaging.default')
 JAVA_VERSION=$(echo $METADATA | jq -r '.javaVersion.default')
 DEPENDENCIES=""
+DEPENDENCIES_FORMAT=$(echo "9999")
 
 while true; do
 
-	DEPENDENCIES_FORMAT=$(echo $DEPENDENCIES | sed 's/[^ID: ".*"')
 	op=$(echo -e "
 	[1] Project:             $BUILD
 	[2] Language:            $LANGUAGE
@@ -37,24 +36,40 @@ while true; do
 
 		(*"[3]"*) SPRING_BOOT_VERSION=$(echo $METADATA | jq -r '.bootVersion' | grep "id" | sed -s 's/"id": "//;s/",//;s/  .* //'|fzf) && echo $SPRING_BOOT_VERSION;;
 
-		(*"[4]"*) echo "Group: " && read GROUP_ID;;
+		(*"[4]"*) read GROUP_ID;;
 
-		(*"[5]"*) echo "Artifact: " && read ARTIFACT_ID;;
+		(*"[5]"*) read ARTIFACT_ID;;
 
-		(*"[6]"*) echo "Name: " && read NAME;;
+		(*"[6]"*) read NAME;;
 
-		(*"[7]"*) echo "Description: " && read DESCRIPTION;;
+		(*"[7]"*) read DESCRIPTION;;
 
-		(*"[8]"*) echo "Package name: " && read PACKAGE_NAME;;
+		(*"[8]"*) read PACKAGE_NAME;;
 
-		(*"[9]"*) echo "Packing: " && read PACKING;;
+		(*"[9]"*) read PACKING;;
 
 		(*"[10]"*) JAVA_VERSION=$(echo $METADATA | jq -r '.javaVersion' | grep "id" | sed -s 's/"id": "//;s/",//;s/  .* //'|fzf);;
 
-		(*"[11]"*) DEPENDENCIES=$(echo $METADATA | jq '.dependencies.values | map(.values[]) | map(.id, .name, .description)[]' | sed '{N;N;s/\n/#/g;}' | sed -E 's/(".+")#(".+")#(".+")/ID: \1 T: \2 D: \3/' | fzf;;
- #--bind start:select-all+clear-query
-		(*"[12]"*) exit && break;; 
+		(*"[11]"*) 
+			DEPENDENCIES=$(echo $METADATA | jq '.dependencies.values | map(.values[]) | map(.id, .name, .description)[]' | sed '{N;N;s/\n/ /g;}' | fzf --exact --multi --sync --query "$DEPENDENCIES_FORMAT" --bind start:select-all+clear-query | awk '{print $1}' | sed -z 's/\n/,/g')
+			DEPENDENCIES_FORMAT=$(echo $DEPENDENCIES | sed -s 's/,/ | /g;s/"//g');;
 
-	esac
+		(*"[12]"*)
+			mkdir $ARTIFACT_ID 
+			curl -s https://start.spring.io/starter.tgz -d language=$LANGUAGE \
+				-d javaVersion=$JAVA_VERSION \
+				-d type=$BUILD \
+				-d bootVersion=$SPRING_BOOT_VERSION \
+				-d groupId=$GROUP_ID \
+				-d artifactId=$ARTIFACT_ID \
+				-d description=$DESCRIPTION \
+				-d dependencies=$DEPENDENCIES \
+				| tar --directory $ARTIFACT_ID -zxf - && \
+				echo "Spring Boot project now in $ARTIFACT_ID directory... Happy Hacking! :)"
+							exit 0;;
 
-done
+						(*"[13]"*) exit && break;;
+
+					esac
+
+				done
