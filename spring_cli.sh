@@ -1,4 +1,5 @@
 METADATA=$(curl -s -H 'Accept: application/json' https://start.spring.io)
+FZF_DEFAULT_OPTS="--reverse --border sharp --cycle --multi --prompt='' --bind=tab:down,btab:up,ctrl-a:select-all,ctrl-space:toggle+down --color=bw --preview='echo {}' --preview-window=down:40%"
 BUILD=$(echo $METADATA | jq -r '.type.default')
 LANGUAGE=$(echo $METADATA | jq -r '.language.default')
 SPRING_BOOT_VERSION=$(echo $METADATA | jq -r '.bootVersion.default')
@@ -14,7 +15,7 @@ DEPENDENCIES_FORMAT=$(echo "9999")
 
 while true; do
 
-	op=$(echo -e "
+	op=$(echo -e "\
 	[1] Project:             $BUILD
 	[2] Language:            $LANGUAGE
 	[3] Spring Boot Version: $SPRING_BOOT_VERSION
@@ -27,7 +28,7 @@ while true; do
 	[10] Java:               $JAVA_VERSION
 	[11] Dependencies:       $DEPENDENCIES
 	[12] Create
-	[13] Exit" | fzf --preview='echo {}' --preview-window=down:40%)
+	[13] Exit" | fzf)
 	case $op in
 
 		(*"[1]"*) BUILD=$(echo $METADATA | jq -r '.type' | grep "id" | sed -s 's/"id": "//;s/",//;s/  .* //'|fzf);;
