@@ -34,13 +34,13 @@
 - SHELL (BASH / ZSH...)
 - Standart packages (curl, sed...)
 - FZF
-- Jq
+- jq
 ### Tricks
-- Are possible set the default variables in menu 
-	- edit the script `vim ./spring_cli.sh`
-	- set variable before `while true; do`
-		- example
+- Are possible set new default variables in menu 
+	- Edit the script `vim ./spring_cli.sh`
+	- Set variable
+		- Example
 			```
-			while true; do
-			NAME="NEW"
+			#NAME=$(echo $METADATA | jq -r '.name.default')
+			NAME=$(echo "newName")
 			```
