@@ -57,6 +57,7 @@ while true; do
 
 		(*"[12]"*)
 			mkdir $ARTIFACT_ID 
+			DEPENDENCIES_FORMAT=$(echo $DEPENDENCIES_FORMAT | sed -s 's/.$//')
 			curl -s https://start.spring.io/starter.tgz -d language=$LANGUAGE \
 				-d javaVersion=$JAVA_VERSION \
 				-d type=$BUILD \
@@ -64,7 +65,7 @@ while true; do
 				-d groupId=$GROUP_ID \
 				-d artifactId=$ARTIFACT_ID \
 				-d description=$DESCRIPTION \
-				-d dependencies=$DEPENDENCIES \
+				-d dependencies=$DEPENDENCIES_FORMAT \
 				| tar --directory $ARTIFACT_ID -zxf - && \
 				echo "Spring Boot project now in $ARTIFACT_ID directory"
 							exit 0;;
