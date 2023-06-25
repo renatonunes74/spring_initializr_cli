@@ -18,10 +18,7 @@
 <div align="left">
 
 ## Preview
-### Initial Menu
-![](https://github.com/renatonunes74/spring_initializr_cli/blob/master/spring_cli_menu.png)
-### Searching Dependencies
-![](https://github.com/renatonunes74/spring_initializr_cli/blob/master/spring_cli_dependencies.png)
+![](https://github.com/renatonunes74/spring_initializr_cli/blob/master/output.gif)
 
 ## Installation
 - Clone repo
