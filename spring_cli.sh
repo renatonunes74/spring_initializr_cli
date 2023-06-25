@@ -52,8 +52,8 @@ while true; do
 		(*"[10]"*) JAVA_VERSION=$(echo $METADATA | jq -r '.javaVersion' | grep "id" | sed -s 's/"id": "//;s/",//;s/  .* //'|fzf);;
 
 		(*"[11]"*) 
-			DEPENDENCIES=$(echo $METADATA | jq '.dependencies.values | map(.values[]) | map(.id, .name, .description)[]' | sed '{N;N;s/\n/ /g;}' | fzf --exact --multi --sync --query "$DEPENDENCIES_FORMAT" --bind start:select-all+clear-query | awk '{print $1}' | sed -z 's/\n/,/g')
-			DEPENDENCIES_FORMAT=$(echo $DEPENDENCIES | sed -s 's/,/ | /g;s/"//g');;
+			DEPENDENCIES=$(echo $METADATA | jq '.dependencies.values | map(.values[]) | map(.id, .name, .description)[]' | sed '{N;N;s/\n/ /g;}' | fzf --exact --multi --sync --query "$DEPENDENCIES_FORMAT" --bind start:select-all+clear-query | awk '{print $1}' | sed -z 's/\n/,/g;s/"//g;s/.$//')
+			DEPENDENCIES_FORMAT=$(echo $DEPENDENCIES | sed -s 's/,/ | /g');;
 
 		(*"[12]"*)
 			mkdir $ARTIFACT_ID 
@@ -65,7 +65,7 @@ while true; do
 				-d groupId=$GROUP_ID \
 				-d artifactId=$ARTIFACT_ID \
 				-d description=$DESCRIPTION \
-				-d dependencies=$DEPENDENCIES_FORMAT \
+				-d dependencies=$DEPENDENCIES \
 				| tar --directory $ARTIFACT_ID -zxf - && \
 				echo "Spring Boot project now in $ARTIFACT_ID directory"
 							exit 0;;
