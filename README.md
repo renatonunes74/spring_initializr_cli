@@ -28,9 +28,13 @@
 	- `./spring_cli.sh`
 ### Dependencies
 - SHELL (BASH / ZSH...)
+    - For working program
 - Standart packages (curl, sed...)
-- FZF
-- jq
+    - For requests and output handling
+- [FZF](https://github.com/junegunn/fzf)
+    - Fuzzy finder
+- [Jq](https://github.com/jqlang/jq)
+    - JSON processor
 ### Tricks
 - Are possible set new default variables in menu 
 	- Edit the script `vim ./spring_cli.sh`
